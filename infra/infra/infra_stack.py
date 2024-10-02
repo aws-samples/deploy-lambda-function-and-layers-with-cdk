@@ -75,7 +75,21 @@ class InfraStack(Stack):
                 "artifacts": {
                     "files": "./infra/app.template.yaml"
                 }
-            })
+            }),
+            environment_variables={
+                "APP_ROOT_CD": codebuild.BuildEnvironmentVariable(
+                    type=codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+                    value=getenv("APP_ROOT")
+                ),
+                "INFRA_REPO_NAME": codebuild.BuildEnvironmentVariable(
+                    type=codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+                    value=getenv("INFRA_REPO_NAME")
+                ),
+                "APP_REPO_NAME": codebuild.BuildEnvironmentVariable(
+                    type=codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+                    value=getenv("APP_REPO_NAME")
+                ),
+            },
         )
 
         cdk_build_action = codepipeline_actions.CodeBuildAction(
