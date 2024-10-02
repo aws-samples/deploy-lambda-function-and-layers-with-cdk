@@ -159,6 +159,7 @@ class InfraStack(Stack):
                                     cut -c1-3)
                                 echo "Version de python $PYTHON_VERSION"
                                 echo "building layer deployable"
+                                echo "Nombre de archivo $FILENAME"
                                 mkdir -p build/python
                                 piphome="../venv/lib/python$PYTHON_VERSION/site-packages/"
                                 cd build && cp -r $piphome python && cd ..
@@ -179,7 +180,7 @@ class InfraStack(Stack):
                 },
                 "artifacts": {
                     "files": [
-                        "**/*"
+                        "build/python/**"
                     ],
                     "base-directory": "build",
                     "name": "$FILENAME"
