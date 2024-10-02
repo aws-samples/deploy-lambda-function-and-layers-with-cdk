@@ -79,7 +79,7 @@ class InfraStack(Stack):
             environment_variables={
                 "APP_ROOT_CD": codebuild.BuildEnvironmentVariable(
                     type=codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-                    value=getenv("APP_ROOT")
+                    value=getenv("APP_ROOT_CD")
                 ),
                 "INFRA_REPO_NAME": codebuild.BuildEnvironmentVariable(
                     type=codebuild.BuildEnvironmentVariableType.PLAINTEXT,
