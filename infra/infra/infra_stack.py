@@ -106,16 +106,11 @@ class InfraStack(Stack):
             build_spec=codebuild.BuildSpec.from_object({
                 "version": "0.2",
                 "phases": {
-                    "pre_build": {
+                    "install": {
                         "commands": [
                             getenv("APP_ROOT_CD", "ls"),
+                            "pip install -r requirements.txt"
                         ]
-                    },
-                    "install": {
-                        "commands": "pip install -r requirements.txt"
-                    },
-                    "build": {
-                        "commands": "pip install -r requirements.txt"
                     }
                 },
                 "artifacts": {
@@ -167,9 +162,20 @@ class InfraStack(Stack):
                                 mkdir -p build/python
                                 piphome="../venv/lib/python$PYTHON_VERSION/site-packages/"
                                 cd build && cp -r $piphome python && cd ..
+                                echo "Contents of build directory:"
+                                ls -R build
                             """
                         ]
                     },
+                    "post_build": {
+                        "commands": [
+                            "echo 'POST_BUILD phase'",
+                            "echo 'Contents of current directory:'",
+                            "ls -la",
+                            "echo 'Contents of build directory:'",
+                            "ls -R build"
+                        ]
+                    }
                 },
                 "artifacts": {
                     "files": [
