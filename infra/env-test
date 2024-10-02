@@ -1,0 +1,3 @@
+APP_REPO_NAME="my-repo-app"
+INFRA_REPONAME="my-repo-infra"
+APP_ROOT_CD="cd app"
