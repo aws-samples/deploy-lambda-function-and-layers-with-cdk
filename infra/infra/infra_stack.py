@@ -79,7 +79,7 @@ class InfraStack(Stack):
             environment_variables={
                 "APP_ROOT_CD": codebuild.BuildEnvironmentVariable(
                     type=codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-                    value=getenv("APP_ROOT_CD")
+                    value=getenv("APP_ROOT_CD", "ls")
                 ),
                 "INFRA_REPO_NAME": codebuild.BuildEnvironmentVariable(
                     type=codebuild.BuildEnvironmentVariableType.PLAINTEXT,
@@ -106,6 +106,11 @@ class InfraStack(Stack):
             build_spec=codebuild.BuildSpec.from_object({
                 "version": "0.2",
                 "phases": {
+                    "pre_build": {
+                        "commands": [
+                            getenv("APP_ROOT_CD", "ls"),
+                        ]
+                    },
                     "install": {
                         "commands": "pip install -r requirements.txt"
                     },
