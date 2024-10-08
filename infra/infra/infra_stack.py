@@ -116,9 +116,7 @@ class InfraStack(Stack):
                     }
                 },
                 "artifacts": {
-                    "files": ["app.py"],
-                    "base-directory": "build",
-                }
+                    "files": ["app.py"],                }
             })
         )
         lambda_build_action = codepipeline_actions.CodeBuildAction(
@@ -182,7 +180,7 @@ class InfraStack(Stack):
                     "files": [
                         "python/**"
                     ],
-                    "base-directory": "build",
+                    "base-directory": "$CODEBUILD_SRC_DIR/build",
                     "name": "$FILENAME"
                 }
             })
