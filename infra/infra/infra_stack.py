@@ -57,7 +57,7 @@ class InfraStack(Stack):
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.AMAZON_LINUX_2_4
             ),
-            build_spec=codebuild.BuildSpec.from_object({
+            build_spec = codebuild.BuildSpec.from_object({
                 "version": "0.2",
                 "phases": {
                     "install": {
@@ -67,13 +67,15 @@ class InfraStack(Stack):
                         "commands": [
                             "pip install -r infra/requirements.txt",
                             "cd infra && cdk synth app -- -o .",
-                            "cdk synth app > ./app.template.yaml",
-                            "ls"
+                            "cdk synth app > app.template.yaml",
+                            "ls -la"  # This will help us verify the file location
                         ]
                     }
                 },
                 "artifacts": {
-                    "files": "./infra/app.template.yaml"
+                    "files": [
+                        "app.template.yaml"
+                    ]
                 }
             }),
             environment_variables={
