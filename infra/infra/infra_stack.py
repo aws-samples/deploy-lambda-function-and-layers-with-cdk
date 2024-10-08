@@ -114,7 +114,8 @@ class InfraStack(Stack):
                     }
                 },
                 "artifacts": {
-                    "files": ["app.py"]
+                    "files": ["app.py"],
+                    "base-directory": "build",
                 }
             })
         )
@@ -164,7 +165,6 @@ class InfraStack(Stack):
                                 piphome="../venv/lib/python$PYTHON_VERSION/site-packages/"
                                 cd build && cp -r $piphome python && cd ..
                                 echo "Contents of build directory:"
-                                ls -R build
                             """
                         ]
                     },
@@ -172,15 +172,13 @@ class InfraStack(Stack):
                         "commands": [
                             "echo 'POST_BUILD phase'",
                             "echo 'Contents of current directory:'",
-                            "ls -la",
-                            "echo 'Contents of build directory:'",
-                            "ls -R build"
+                            "ls -la"
                         ]
                     }
                 },
                 "artifacts": {
                     "files": [
-                        "build/python/**"
+                        "python/**"
                     ],
                     "base-directory": "build",
                     "name": "$FILENAME"
