@@ -164,7 +164,8 @@ class InfraStack(Stack):
                                 mkdir -p build/python
                                 piphome="../venv/lib/python$PYTHON_VERSION/site-packages/"
                                 cd build && cp -r $piphome python && cd ..
-                                echo "Contents of build directory:"
+                                echo "Contents of python directory:"
+                                ls -la
                             """
                         ]
                     },
