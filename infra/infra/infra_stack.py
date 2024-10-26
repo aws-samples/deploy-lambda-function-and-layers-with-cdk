@@ -75,14 +75,11 @@ class InfraStack(Stack):
                 "artifacts": {
                     "files": [
                         "app.template.yaml"
-                    ]
+                    ],
+                    "base-directory": "infra"
                 }
             }),
             environment_variables={
-                "APP_ROOT_CD": codebuild.BuildEnvironmentVariable(
-                    type=codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-                    value=getenv("APP_ROOT_CD", "ls")
-                ),
                 "INFRA_REPO_NAME": codebuild.BuildEnvironmentVariable(
                     type=codebuild.BuildEnvironmentVariableType.PLAINTEXT,
                     value=getenv("INFRA_REPO_NAME")
@@ -110,13 +107,14 @@ class InfraStack(Stack):
                 "phases": {
                     "install": {
                         "commands": [
-                            getenv("APP_ROOT_CD", "ls"),
-                            "pip install -r requirements.txt"
+                            "cd app"
                         ]
                     }
                 },
                 "artifacts": {
-                    "files": ["app.py"],                }
+                    "files": ["app.py"],
+                    "base-directory": "app",       
+                }
             })
         )
         lambda_build_action = codepipeline_actions.CodeBuildAction(
@@ -142,14 +140,13 @@ class InfraStack(Stack):
                 "phases": {
                     "install": {
                         "commands": [
-                            getenv("APP_ROOT_CD", "ls"),
                             "echo \"Creando entorno y activandolo\"",
                             "python3 -m venv venv",
                             ". venv/bin/activate",
                             "echo \"Actualizando pip\"",
                             "pip install --upgrade pip",
                             "echo \"Instalando librerías\"",
-                            "pip install -r requirements.txt",
+                            "pip install -r app/requirements.txt",
                         ]
                     },
                     "build": {
@@ -158,30 +155,24 @@ class InfraStack(Stack):
                                 export PYTHON_VERSION=$(python3 --version | \
                                     egrep -o "([0-9]{1,}\.)+[0-9]{1,}" | \
                                     cut -c1-3)
-                                echo "Version de python $PYTHON_VERSION"
-                                echo "building layer deployable"
-                                echo "Nombre de archivo $FILENAME"
-                                mkdir -p build/python
-                                piphome="../venv/lib/python$PYTHON_VERSION/site-packages/"
-                                cd build && cp -r $piphome python && cd ..
-                                echo "Contents of python directory:"
+                                echo "Python version: $PYTHON_VERSION"
+                                
+                                echo "Building layer deployable with filename: $FILENAME"
+                                echo "Contents of root directory:"
                                 ls -la
+                                mkdir -p build/python
+
+                                piphome=../venv/lib/python$PYTHON_VERSION/site-packages/
+                                cd build && cp -r "$piphome"* python && cd ..
                             """
                         ]
                     },
-                    "post_build": {
-                        "commands": [
-                            "echo 'POST_BUILD phase'",
-                            "echo 'Contents of current directory:'",
-                            "ls -la"
-                        ]
-                    }
                 },
                 "artifacts": {
                     "files": [
-                        "python/**"
+                        "**/*"
                     ],
-                    "base-directory": "$CODEBUILD_SRC_DIR/build",
+                    "base-directory": "build",
                     "name": "$FILENAME"
                 }
             })
@@ -206,7 +197,7 @@ class InfraStack(Stack):
                 codepipeline_actions.CloudFormationCreateUpdateStackAction(
                     action_name="Lambda_CFN_Deploy",
                     template_path=cdk_build_output.at_path(
-                        "infra/app.template.yaml"
+                        "app.template.yaml"
                     ),
                     stack_name="ApplicationStackDeployed",
                     admin_permissions=True,
